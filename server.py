@@ -48,36 +48,29 @@ class Serv:
         while True:
             data = con.recv(1024)
             if not data:
-                print("Connection closed!!!!!!!!")
+                print("Closing connection error")
                 if user == None:
                     return
-                #Lobby check
-                if user.lobby != None:
-                    if user == user.lobby.host:
-                        print("User was host, closing lobby")
-                        if not user.lobby.gameStarted:
-                            user.lobby.closeLobby()
-                        else:
-                            user.lobby.kickPlayer(user.id)
-                    else:
-                        user.lobby.kickPlayer(user.id)
-                        if len(user.lobby.players) == 0:
-                            user.lobby.closeLobby()
-                #Game check ###TODODOOOOODODODODO
-                try:
-                    self.users.remove(user)
-                except:
-                    print("User already removed")
-                break
+                user.onCloseChecks()
+                self.users.remove(user)
+                return
             else:
                 print("Got message from conn id: " + str(user.id))
                 print(util.bs(data))
-                self.msgHandler(user, util.bs(data))
+                if not self.msgHandler(user, util.bs(data)):
+                    print("Closing connection standart")
+                    user.onCloseChecks()
+                    self.users.remove(user)
+                    user.conn.close()
+                    return
 
 
     def msgHandler(self, user, msg):
         command = msg.split(":")
         cmd = command[0]
+
+        if cmd == "closeConnection":
+            return False
 
         #Game commands
         if cmd == "rdy":
@@ -151,9 +144,11 @@ class Serv:
         if cmd == "sl":
             if user.lobby.host == user:
                 if len(user.lobby.players) > 1:
-                    user.lobby.sendToPlayers("start:;")
+                    user.lobby.startLobby()
                 else:
                     user.sendMsg(c.error("Слишком мало игроков в лобби"))
+
+        return True
 
 
 
@@ -183,6 +178,8 @@ class Serv:
         com = cmd[1]
         if ":" in cmd[1]:
             com = cmd[1][:cmd[1].find(":")]
+        if ";" in cmd[1]:
+            com = com.replace(";", ",")
         cmd = "sq:{}:{}:{}:{}:{};".format(com, cmd[2], cmd[3], cmd[4], cmd[5])
         return cmd
 

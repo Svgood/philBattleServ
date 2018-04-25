@@ -18,8 +18,8 @@ def commonQuestion():
     return "scq:;"
 
 
-def contest():
-    return "cq:;"
+def contest(idDef, idAt):
+    return "cq:{}:{}:;".format(idDef, idAt)
 
 
 def contestWinner(playerId):
@@ -31,6 +31,9 @@ def contestNewQuestion():
 
 def closeLobby():
     return "close:;"
+
+def minusHealth(id):
+    return "minusHealth:{}:;".format(id)
 
 def error(msg):
     return "error:{}:;".format(msg)

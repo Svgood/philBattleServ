@@ -13,13 +13,16 @@ class Lobby:
         self.host = host
         self.host.lobby = self
         self.players = [self.host]
+
         self.state = 1
         self.currentPlayerTurn = 1
+
         self.contesters = []
         self.winContesters = []
         self.contestersAnswered = 0
         self.contestCell = Vec2(0, 0)
         self.contestType = 0
+
         self.playersReady = 0
         self.chat = ""
 
@@ -59,7 +62,7 @@ class Lobby:
             self.startGame()
 
     def startLobby(self):
-        self.sendToPlayers("start:;")
+        self.sendToPlayers("start:{}:;".format(len(self.players)))
         self.gameStarted = True
 
     def nextPlayer(self, bonus = 0):
@@ -119,7 +122,11 @@ class Lobby:
             if p.gameId == attackerId or p.gameId == defenderId:
                 p.contestAnswer = 0
                 self.contesters.append(p)
-                p.sendMsg(c.contest())
+                p.sendMsg(c.contest(defenderId, attackerId))
+
+        for p in self.contesters:
+            p.health = 2
+            if p.gameId == defenderId: p.health += 1
 
     def contestAnswer(self, playerdId, yes : bool):
         if yes:
@@ -132,17 +139,22 @@ class Lobby:
         if self.contestersAnswered == len(self.contesters):
             if self.contestType == 0:
                 if len(self.winContesters) == 1:
-                    self.sendToPlayers(c.contestWinner(self.winContesters[0].gameId) +
-                                       c.captureCell(self.winContesters[0].gameId, self.contestCell.x, self.contestCell.y))
-                    self.nextPlayer()
-                    return
-                else:
-                    self.winContesters = []
-                    self.contestersAnswered = 0
                     for p in self.contesters:
-                        p.sendMsg(self.serv.setRandomQuestion())
-                        p.contestAnswer = 0
-                        p.sendMsg(c.contestNewQuestion())
+                        if p != self.winContesters[0]:
+                            p.health -= 1
+                            if p.health <= 0:
+                                self.sendToContesters(c.minusHealth(p.gameId))
+                                self.sendToPlayers(c.contestWinner(self.winContesters[0].gameId) +
+                                                   c.captureCell(self.winContesters[0].gameId, self.contestCell.x, self.contestCell.y))
+                                self.nextPlayer()
+                                return
+                            else:
+                                self.sendToContesters(c.minusHealth(p.gameId))
+                                self.resetContestVars()
+                                return
+                else:
+                    self.resetContestVars()
+
             if self.contestType == 1:
                 self.contesters = self.winContesters
                 if len(self.winContesters) == 1:
@@ -150,12 +162,20 @@ class Lobby:
                 elif len(self.winContesters) == 0:
                     self.nextPlayer()
                 else:
-                    self.winContesters = []
-                    self.contestersAnswered = 0
-                    for p in self.contesters:
-                        p.contestAnswer = 0
-                        p.sendMsg(self.serv.setRandomQuestion())
-                        p.sendMsg(c.contestNewQuestion())
+                    self.resetContestVars()
+
+    def sendToContesters(self, msg):
+        for p in self.contesters:
+            p.sendMsg(msg)
+
+    def resetContestVars(self):
+        self.winContesters = []
+        self.contestersAnswered = 0
+        question = self.serv.setRandomQuestion()
+        for p in self.contesters:
+            p.sendMsg(question)
+            p.contestAnswer = 0
+            p.sendMsg(c.contestNewQuestion())
 
     def findPlayerById(self, id):
         for i in range(len(self.players)):

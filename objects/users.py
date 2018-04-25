@@ -8,9 +8,12 @@ class User:
         self.id = id
         self.name = name
         self.conn = conn
+
+        #lobby
         self.gameId = 0
-        self.lobby = ""
+        self.lobby = None
         self.contestAnswer = 0
+        self.health = 1
 
         #Stat
         self.avaId = 0
@@ -33,3 +36,15 @@ class User:
         self.questionsRight = data[8]
         self.authorised = True
 
+    def onCloseChecks(self):
+        if self.lobby != None:
+            if self == self.lobby.host:
+                print("User was host, closing lobby")
+                if not self.lobby.gameStarted:
+                    self.lobby.closeLobby()
+                else:
+                    self.lobby.kickPlayer(user.id)
+            else:
+                self.lobby.kickPlayer(user.id)
+                if len(self.lobby.players) == 0:
+                    self.lobby.closeLobby()
