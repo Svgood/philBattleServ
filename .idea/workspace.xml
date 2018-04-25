@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64c711f4-3681-4557-8fbb-a91c79998351" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/configs/config.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/server.py" afterPath="$PROJECT_DIR$/server.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -55,11 +57,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="server.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="server.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2405">
-              <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+            <state relative-caret-position="213">
+              <caret line="183" column="43" lean-forward="false" selection-start-line="183" selection-start-column="43" selection-end-line="183" selection-end-column="43" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -67,7 +69,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/configs/config.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="102">
@@ -164,10 +166,10 @@
         <option value="$PROJECT_DIR$/configs/commands.py" />
         <option value="$PROJECT_DIR$/objects/users.py" />
         <option value="$PROJECT_DIR$/objects/lobby.py" />
-        <option value="$PROJECT_DIR$/server.py" />
         <option value="$PROJECT_DIR$/utils/docParser.py" />
         <option value="$PROJECT_DIR$/db.py" />
         <option value="$PROJECT_DIR$/configs/config.py" />
+        <option value="$PROJECT_DIR$/server.py" />
       </list>
     </option>
   </component>
@@ -870,13 +872,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/db.py">
+    <entry file="file://$PROJECT_DIR$/configs/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="59" lean-forward="false" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="102">
+          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -888,21 +888,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server.py">
+    <entry file="file://$PROJECT_DIR$/db.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2405">
-          <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+        <state relative-caret-position="153">
+          <caret line="9" column="59" lean-forward="false" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configs/config.py">
+    <entry file="file://$PROJECT_DIR$/server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="213">
+          <caret line="183" column="43" lean-forward="false" selection-start-line="183" selection-start-column="43" selection-end-line="183" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

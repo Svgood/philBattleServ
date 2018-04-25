@@ -23,7 +23,7 @@ class Serv:
         self.curThread = 0
         self.lobbiesId = 0
         self.usersId = 0
-        
+
         print("started")
 
     def listen(self):
@@ -180,6 +180,8 @@ class Serv:
 
     def setRandomQuestion(self):
         cmd = db.getQuestion()
+        if ":" in cmd[1]:
+            cmd[1] = cmd[:cmd[1].find(":")]
         cmd = "sq:{}:{}:{}:{}:{};".format(cmd[1], cmd[2], cmd[3], cmd[4], cmd[5])
         return cmd
 
