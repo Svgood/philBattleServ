@@ -2,6 +2,7 @@ import socket
 import threading
 import mysql.connector
 import db
+import time
 
 from utils import util
 from configs import config
@@ -27,6 +28,10 @@ class Serv:
         print("started")
 
     def listen(self):
+
+        t = threading.Thread(target=self.aliveChecker)
+        t.start()
+
         while True:
             print("listening")
             self.sock.listen(10)
@@ -64,6 +69,16 @@ class Serv:
                     user.conn.close()
                     return
 
+    def aliveChecker(self):
+        while True:
+            time.sleep(5)
+            for user in self.users:
+                #print("checking if alive")
+                try:
+                    user.sendMsg("?:;")
+                except:
+                    print("error")
+                    self.users.remove(user)
 
     def msgHandler(self, user, msg):
         command = msg.split(":")

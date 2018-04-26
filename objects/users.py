@@ -37,14 +37,15 @@ class User:
         self.authorised = True
 
     def onCloseChecks(self):
-        if self.lobby != None:
+        if self.lobby is not None:
             if self == self.lobby.host:
                 print("User was host, closing lobby")
                 if not self.lobby.gameStarted:
                     self.lobby.closeLobby()
                 else:
-                    self.lobby.kickPlayer(user.id)
+                    self.lobby.kickPlayer(self.id)
             else:
-                self.lobby.kickPlayer(user.id)
-                if len(self.lobby.players) == 0:
+                tempLobby = self.lobby
+                self.lobby.kickPlayer(self.id)
+                if len(tempLobby.players) == 0:
                     self.lobby.closeLobby()

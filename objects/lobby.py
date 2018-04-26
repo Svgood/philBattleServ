@@ -43,6 +43,7 @@ class Lobby:
 
     def kickPlayer(self, id):
         p = self.findPlayerById(id)
+        p.lobby = None
         self.players.remove(p)
 
         if not self.gameStarted:
