@@ -6,6 +6,7 @@ class Lobby:
 
     def __init__(self, lobbyId, host, serv):
         self.serv = serv
+        self.questionsType = 0
         self.lobbyId = lobbyId
         self.gameStarted = False
         self.name = "testLobby"
@@ -26,8 +27,17 @@ class Lobby:
         self.playersReady = 0
         self.chat = ""
 
+    def getTypeName(self):
+        if self.questionsType == 0:
+            self.name = "Общие вопросы"
+        if self.questionsType == 1:
+            self.name = "Философия "
+        if self.questionsType == 2:
+            self.name = "Украинский язык "
+        return self.name
+
     def formLobbyInfo(self):
-        return "{}:{}:{}:{};".format(self.name, len(self.players), self.maxPlayers, self.lobbyId)
+        return "{}:{}:{}:{};".format(self.getTypeName(), len(self.players), self.maxPlayers, self.lobbyId)
 
     def formPlayerInfo(self):
         com = "cp:;"
@@ -50,8 +60,9 @@ class Lobby:
             self.sendToPlayers("cp:;" + self.formPlayerInfo())
             p.sendMsg(c.closeLobby())
         else:
-            #Delete in game
-            pass
+            self.sendToPlayers("kick:{};".format(p.gameId))
+            if len(self.players) == 1:
+                self.sendToPlayers("winner:;")
 
         if len(self.players) == 0:
             self.closeLobby()
@@ -67,7 +78,7 @@ class Lobby:
         self.gameStarted = True
 
     def nextPlayer(self, bonus = 0):
-        self.sendToPlayers(self.serv.setRandomQuestion())
+        self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
         if bonus == 0:
             self.currentPlayerTurn += 1
             if self.currentPlayerTurn == len(self.players) + 1:
@@ -100,7 +111,7 @@ class Lobby:
                            cmd +
                            c.setCurPlayer(1))
             num += 1
-        self.sendToPlayers(self.serv.setRandomQuestion())
+        self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
 
     def addUser(self, user):
         self.players.append(user)
@@ -172,7 +183,7 @@ class Lobby:
     def resetContestVars(self):
         self.winContesters = []
         self.contestersAnswered = 0
-        question = self.serv.setRandomQuestion()
+        question = self.serv.setRandomQuestion(self.questionsType)
         for p in self.contesters:
             p.sendMsg(question)
             p.contestAnswer = 0

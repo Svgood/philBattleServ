@@ -51,7 +51,16 @@ class Serv:
 
     def listenConn(self, user, con):
         while True:
-            data = con.recv(1024)
+            try:
+                data = con.recv(1024)
+            except:
+                print("Connection error")
+                print("Closing connection error")
+                if user == None:
+                    return
+                user.onCloseChecks()
+                self.users.remove(user)
+                return
             if not data:
                 print("Closing connection error")
                 if user == None:
@@ -81,6 +90,8 @@ class Serv:
                     self.users.remove(user)
 
     def msgHandler(self, user, msg):
+        if ";" in msg:
+            msg = msg[:msg.find(";")]
         command = msg.split(":")
         cmd = command[0]
 
@@ -100,10 +111,13 @@ class Serv:
                 user.lobby.contestAnswer(user.gameId, False)
 
         if cmd == "c":
-            user.lobby.sendToPlayers(msg)
+            user.lobby.sendToPlayers(msg + ";")
             user.lobby.nextPlayer()
         if cmd == "nt":
             user.lobby.nextPlayer()
+
+        if cmd == "quitLobby":
+            user.lobby.kickPlayer(user.id)
 
         #Pregame handle
         #
@@ -135,6 +149,7 @@ class Serv:
 
         if cmd == "cl":
             lobby = self.createLobby(user)
+            lobby.questionsType = int(command[1])
             com = "lobbie:" + lobby.formLobbyInfo()
             user.sendMsg(com)
             user.sendMsg(user.lobby.formPlayerInfo())
@@ -188,8 +203,8 @@ class Serv:
                 return self.lobbies[i]
         return None
 
-    def setRandomQuestion(self):
-        cmd = db.getQuestion()
+    def setRandomQuestion(self, type = 0):
+        cmd = db.getQuestion(type)
         com = cmd[1]
         if ":" in cmd[1]:
             com = cmd[1][:cmd[1].find(":")]

@@ -6,8 +6,8 @@ def connect():
                                  host="127.0.0.1", database=config.dbname)
     return db
 
-def getQuestion():
-    return exec("SELECT * FROM questions WHERE category = 1 ORDER BY RAND() LIMIT 1;")
+def getQuestion(type = 0):
+    return exec("SELECT * FROM questions WHERE category = {} ORDER BY RAND() LIMIT 1;".format(type))
 
 def getUser(login):
     return exec("SELECT * FROM users WHERE login = '{}';".format(login))

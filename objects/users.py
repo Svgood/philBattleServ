@@ -47,5 +47,3 @@ class User:
             else:
                 tempLobby = self.lobby
                 self.lobby.kickPlayer(self.id)
-                if len(tempLobby.players) == 0:
-                    self.lobby.closeLobby()
