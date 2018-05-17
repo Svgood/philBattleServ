@@ -46,7 +46,7 @@ class Lobby:
         return com
 
     def closeLobby(self):
-        self.serv.lobbies.remove(self)
+        self.serv.lobbyManager.lobbies.remove(self)
         self.sendToPlayers(c.closeLobby())
         del(self)
 
@@ -150,35 +150,53 @@ class Lobby:
         self.contestersAnswered += 1
         if self.contestersAnswered == len(self.contesters):
             if self.contestType == 0:
-                if len(self.winContesters) == 1:
-                    for p in self.contesters:
-                        if p != self.winContesters[0]:
-                            p.health -= 1
-                            if p.health <= 0:
-                                self.sendToContesters(c.minusHealth(p.gameId))
-                                self.sendToPlayers(c.contestWinner(self.winContesters[0].gameId) +
-                                                   c.captureCell(self.winContesters[0].gameId, self.contestCell.x, self.contestCell.y))
-                                self.nextPlayer()
-                                return
-                            else:
-                                self.sendToContesters(c.minusHealth(p.gameId))
-                                self.resetContestVars()
-                                return
-                else:
-                    self.resetContestVars()
-
+                self.processContest()
+                return
             if self.contestType == 1:
-                self.contesters = self.winContesters
-                if len(self.winContesters) == 1:
-                    self.nextPlayer(self.winContesters[0].gameId)
-                elif len(self.winContesters) == 0:
-                    self.nextPlayer()
-                else:
-                    self.resetContestVars()
+                self.processCommonQuestion()
+                return
 
     def sendToContesters(self, msg):
         for p in self.contesters:
             p.sendMsg(msg)
+
+    def processContest(self):
+        lostCount = 0
+        lostPlayer = None
+        for p in self.contesters:
+            if p not in self.winContesters:
+                p.health -= 1
+                if p.health <= 0:
+                    lostCount += 1
+                    lostPlayer = p
+                else:
+                    self.sendToContesters(c.minusHealth(p.gameId))
+
+        if lostCount == 1:
+            winner = None
+            for p in self.contesters:
+                if p != lostPlayer:
+                    winner = p
+            self.sendToContesters(c.minusHealth(lostPlayer.gameId))
+            self.sendToPlayers(c.contestWinner(winner.gameId) +
+                               c.captureCell(winner.gameId, self.contestCell.x,
+                                             self.contestCell.y))
+            self.nextPlayer()
+            return
+        if lostCount == 2:
+            self.sendToPlayers(c.contestWinner(0))
+            self.nextPlayer()
+            return
+        self.resetContestVars()
+
+    def processCommonQuestion(self):
+        self.contesters = self.winContesters
+        if len(self.winContesters) == 1:
+            self.nextPlayer(self.winContesters[0].gameId)
+        elif len(self.winContesters) == 0:
+            self.nextPlayer()
+        else:
+            self.resetContestVars()
 
     def resetContestVars(self):
         self.winContesters = []

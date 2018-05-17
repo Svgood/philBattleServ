@@ -7,31 +7,21 @@ if __name__ == '__main__':
                                  host="127.0.0.1", database="phibattle")
 
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM users")
-    print(cursor.fetchall())
-
-
-    exit(0)
-    for line in f:
-        i += 1
-
-        if i % 2 == 0:
-            line = line[:line.find("\n")]
-            if "`" in line:
-                line = line[:line.find("`")] + line[line.find("'") + 1:]
-            mas.append(line)
-
-            print(line)
-            if len(mas) == 5:
-                try:
-                    cursor.execute(
-                        """INSERT INTO questions (text, ans1, ans2, ans3, ans4) VALUES ('{}', '{}', '{}', '{}', '{}');""".format(
-                            mas[0], mas[1], mas[2], mas[3], mas[4]))
-                except:
-                    pass
+    i = 0
+    total = []
+    mas = []
+    with open("file1.csv") as file:
+        for f in file:
+            i += 1
+            #print(f)
+            mas.append(f.replace("\n", ""))
+            if i % 5 == 0:
+                print(mas)
+                total.append(mas)
                 mas = []
-    f.close()
+    for obj in total:
+        cursor.execute(
+            """INSERT INTO questions (text, ans1, ans2, ans3, ans4, category) VALUES ('{}', '{}', '{}', '{}', '{}', {});""".format(
+                obj[0], obj[1], obj[2], obj[3], obj[4], 1))
     db.commit()
-
-
     db.close()

@@ -10,6 +10,7 @@ from configs import commands as c
 
 from objects.users import User
 from objects.lobby import Lobby
+from lobbyManager import LobbyManager
 
 
 class Serv:
@@ -17,9 +18,10 @@ class Serv:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((config.host, config.port))
+        self.lobbyManager = LobbyManager(self)
+
         self.conns = []
         self.users = []
-        self.lobbies = []
         self.threads = []
         self.curThread = 0
         self.lobbiesId = 0
@@ -29,23 +31,24 @@ class Serv:
 
     def listen(self):
 
+        #alive checker
         t = threading.Thread(target=self.aliveChecker)
         t.start()
 
         while True:
             print("listening")
-            self.sock.listen(10)
+            self.sock.listen(128)
             conn, addr = self.sock.accept()
             self.conns.append(conn)
 
-            usr = User(self.curThread, "testUser{}".format(self.curThread), conn)
+            usr = User(self.curThread, "NoName{}".format(self.curThread), conn)
             self.users.append(usr)
 
             print("Got connection " + str(len(self.conns)))
 
             t = threading.Thread(target=self.listenConn, args=(usr, conn))
             self.threads.append(t)
-            self.threads[len(self.threads) - 1].start()
+            t.start()
 
             self.curThread += 1
 
@@ -54,28 +57,16 @@ class Serv:
             try:
                 data = con.recv(1024)
             except:
-                print("Connection error")
-                print("Closing connection error")
-                if user == None:
-                    return
-                user.onCloseChecks()
-                self.users.remove(user)
+                self.closeConnection(user, 1)
                 return
             if not data:
-                print("Closing connection error")
-                if user == None:
-                    return
-                user.onCloseChecks()
-                self.users.remove(user)
+                self.closeConnection(user, 1)
                 return
             else:
                 print("Got message from conn id: " + str(user.id))
                 print(util.bs(data))
                 if not self.msgHandler(user, util.bs(data)):
-                    print("Closing connection standart")
-                    user.onCloseChecks()
-                    self.users.remove(user)
-                    user.conn.close()
+                    self.closeConnection(user)
                     return
 
     def aliveChecker(self):
@@ -86,8 +77,7 @@ class Serv:
                 try:
                     user.sendMsg("?:;")
                 except:
-                    print("error")
-                    self.users.remove(user)
+                    self.closeConnection(user, 1)
 
     def msgHandler(self, user, msg):
         if ";" in msg:
@@ -141,14 +131,14 @@ class Serv:
 
         if cmd == "gl":
             com = ""
-            for l in self.lobbies:
+            for l in self.lobbyManager.lobbies:
                 if not l.gameStarted:
                     com += "lobbie:" + l.formLobbyInfo()
             com += "sl:;"
             user.sendMsg(com)
 
         if cmd == "cl":
-            lobby = self.createLobby(user)
+            lobby = self.lobbyManager.createLobby(user)
             lobby.questionsType = int(command[1])
             com = "lobbie:" + lobby.formLobbyInfo()
             user.sendMsg(com)
@@ -156,7 +146,7 @@ class Serv:
             user.sendMsg("jl:{}".format(lobby.lobbyId))
 
         if cmd == "jl":
-            l = self.findLobbyById(int(command[1]))
+            l = self.lobbyManager.findLobbyById(int(command[1]))
             if l.maxPlayers != len(l.players):
                 l.sendToPlayers("player:{};ul:;".format(user.name))
                 l.addUser(user)
@@ -180,28 +170,26 @@ class Serv:
 
         return True
 
+    def closeConnection(self, user, code=0):
+        if code == 0:
+            print("Closing connection - ok")
+        else:
+            print("Closing connection error")
 
+        if user == None:
+            return
+        user.onCloseChecks()
+        self.users.remove(user)
+        try:
+            user.conn.close()
+        except:
+            print("Closed already")
 
 
     def checkUser(self, login, password):
         return True
         if login == "admin" and password == "admin":
             return True
-
-    def createLobby(self, hostUser):
-        lobby = Lobby(self.lobbiesId, hostUser, self)
-        self.lobbies.append(lobby)
-        self.lobbiesId += 1
-        return lobby
-
-    def send(self, conn, message):
-        conn.send(util.sb(message))
-
-    def findLobbyById(self, id):
-        for i in range(len(self.lobbies)):
-            if self.lobbies[i].lobbyId == id:
-                return self.lobbies[i]
-        return None
 
     def setRandomQuestion(self, type = 0):
         cmd = db.getQuestion(type)
