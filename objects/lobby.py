@@ -46,9 +46,12 @@ class Lobby:
         return com
 
     def closeLobby(self):
-        self.serv.lobbyManager.lobbies.remove(self)
-        self.sendToPlayers(c.closeLobby())
-        del(self)
+        try:
+            self.serv.lobbyManager.lobbies.remove(self)
+            self.sendToPlayers(c.closeLobby())
+            del(self)
+        except:
+            print("No lobbies to delete error")
 
 
     def kickPlayer(self, id):

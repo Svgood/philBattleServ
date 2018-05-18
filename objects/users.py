@@ -47,3 +47,22 @@ class User:
             else:
                 tempLobby = self.lobby
                 self.lobby.kickPlayer(self.id)
+
+    def formPlayerInfo(self):
+        return "playerInfo:{}:{}:{}:{}:{}:{};".format(self.name, self.avaId,
+                                                     self.gamesPlayed, self.gamesWon,
+                                                     self.questionsAnswered, self.questionsRight)
+
+    def loadUser(self, info):
+        print(info)
+        self.name = info[1]
+        self.gamesPlayed = info[3]
+        self.gamesWon = info[4]
+        self.avaId = info[5]
+        self.questionsAnswered = info[7]
+        self.questionsRight = info[8]
+        pass
+
+
+    def updatePlayer(self):
+        pass

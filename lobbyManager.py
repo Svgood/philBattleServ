@@ -37,4 +37,4 @@ class LobbyManager:
             time.sleep(10)
             for l in self.lobbies:
                 if len(l.players) == 0:
-                    self.lobbies.remove(l)
+                    l.closeLobby()

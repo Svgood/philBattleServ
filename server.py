@@ -115,19 +115,22 @@ class Serv:
         #
         #
         if cmd == "register":
-            if len(db.getUser(command[1])) == 0:
-                db.registerUser(command[1], command[2], command[3])
+            if db.registerUser(command[1], command[2], command[3]):
+                user.sendMsg(c.openLoginScreen())
                 user.sendMsg(c.error("Регистрация успешна"))
             else:
-                user.sendMsg(c.error("Пользователь уже зарегестрирован"))
+                user.sendMsg(c.error("Пользователь уже зарегистрирован"))
 
         if cmd == "login":
-            if self.checkUser(command[1], command[2]):
+            userInfo = db.getUser(command[1], command[2])
+            if userInfo:
                 user.authorised = True
-                user.name = command[1]
-                user.sendMsg("log:1")
+                user.loadUser(userInfo)
+                user.sendMsg(user.formPlayerInfo())
+                user.sendMsg("log:1;")
             else:
-                user.sendMsg("log:0")
+                user.sendMsg("log:0;")
+                user.sendMsg(c.error("Неверный логин или пароль"))
 
         if cmd == "gl":
             com = ""
@@ -185,11 +188,6 @@ class Serv:
         except:
             print("Closed already")
 
-
-    def checkUser(self, login, password):
-        return True
-        if login == "admin" and password == "admin":
-            return True
 
     def setRandomQuestion(self, type = 0):
         cmd = db.getQuestion(type)

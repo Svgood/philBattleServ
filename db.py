@@ -9,11 +9,15 @@ def connect():
 def getQuestion(type = 0):
     return exec("SELECT * FROM questions WHERE category = {} ORDER BY RAND() LIMIT 1;".format(type))
 
-def getUser(login):
-    return exec("SELECT * FROM users WHERE login = '{}';".format(login))
+def getUser(login, pas):
+    return exec("SELECT * FROM users WHERE username = '{}' and password = '{}' ;".format(login, pas))
 
 def registerUser(login, pas, email):
-    exec("INSERT INTO users (l")
+    if (exec("SELECT * FROM users WHERE username = '{}'".format(login)) != None):
+        return False
+    exec("INSERT INTO users (username, password, gamesPlayed, gamesWon, avaId, color, questionsAnswered, questionsCorrect, email) "
+         "VALUES ('{}', '{}', 0, 0, 0, '1:1:1', 0, 0, '{}');".format(login, pas, email))
+
     return True
 
 def exec(command):
@@ -25,6 +29,7 @@ def exec(command):
     except:
         print("No data to fetch")
         cmd = None
+    db.commit()
     cursor.close()
     db.close()
     return cmd

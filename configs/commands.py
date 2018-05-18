@@ -35,5 +35,8 @@ def closeLobby():
 def minusHealth(id):
     return "minusHealth:{}:;".format(id)
 
+def openLoginScreen():
+    return "logScreen:;"
+
 def error(msg):
     return "error:{}:;".format(msg)
