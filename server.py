@@ -33,7 +33,7 @@ class Serv:
         self.loggedUsers = {}
 
 
-        print("started")
+        util.printLog("started")
 
     def listen(self):
 
@@ -42,7 +42,7 @@ class Serv:
         t.start()
 
         while True:
-            print("listening")
+            util.printLog("listening")
             self.sock.listen(128)
             conn, addr = self.sock.accept()
             self.conns.append(conn)
@@ -50,7 +50,7 @@ class Serv:
             usr = User(self.curThread, "NoName{}".format(self.curThread), conn)
             self.users.append(usr)
 
-            print("Got connection " + str(len(self.conns)))
+            util.printLog("Got connection " + str(len(self.conns)))
 
             t = threading.Thread(target=self.listenConn, args=(usr, conn))
             self.threads.append(t)
@@ -69,8 +69,8 @@ class Serv:
                 self.closeConnection(user, 1)
                 return
             else:
-                print("Got message from conn id: " + str(user.id))
-                print(util.bs(data))
+                util.printLog("Got message from conn id: " + str(user.id))
+                util.printLog(util.bs(data))
                 if not self.msgHandler(user, util.bs(data)):
                     self.closeConnection(user)
                     return
@@ -80,7 +80,7 @@ class Serv:
         while True:
             time.sleep(5)
             for user in self.users:
-                #print("checking if alive")
+                #util.printLog("checking if alive")
                 try:
                     user.sendMsg("?:;")
                 except:
@@ -106,9 +106,9 @@ class Serv:
 
     def closeConnection(self, user, code=0):
         if code == 0:
-            print("Closing connection - ok")
+            util.printLog("Closing connection - ok")
         else:
-            print("Closing connection error")
+            util.printLog("Closing connection error")
 
         if user == None:
             return
@@ -117,7 +117,7 @@ class Serv:
         try:
             user.conn.close()
         except:
-            print("Closed already")
+            util.printLog("Closed already")
 
 
     def setRandomQuestion(self, type = 0):

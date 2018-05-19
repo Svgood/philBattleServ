@@ -1,5 +1,6 @@
 from configs import commands as c
 from database import db
+from utils import util
 
 
 class PreGameHandler:
@@ -12,6 +13,7 @@ class PreGameHandler:
 
         if cmd == "register":
             if db.registerUser(command[1], command[2], command[3]):
+                util.printLog("Registred user {}, {}, {}".format(command[1], command[2], command[3]))
                 user.sendMsg(c.openLoginScreen())
                 user.sendMsg(c.error("Регистрация успешна"))
             else:
@@ -38,6 +40,7 @@ class PreGameHandler:
             user.sendMsg(com)
 
         if cmd == "cl":
+            util.printLog("User {} created lobby".format(user.name))
             lobby = self.server.lobbyManager.createLobby(user)
             lobby.questionsType = int(command[1])
             com = "lobbie:" + lobby.formLobbyInfo()
@@ -48,6 +51,7 @@ class PreGameHandler:
         if cmd == "jl":
             l = self.server.lobbyManager.findLobbyById(int(command[1]))
             if l.maxPlayers != len(l.players):
+                util.printLog("User {} joined lobby id {}".format(user.name, command[1]))
                 l.sendToPlayers("player:{};ul:;".format(user.name))
                 l.addUser(user)
                 user.sendMsg(user.lobby.formPlayerInfo())
