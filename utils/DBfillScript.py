@@ -1,5 +1,5 @@
 import mysql.connector
-
+import os
 
 if __name__ == '__main__':
 
@@ -10,7 +10,8 @@ if __name__ == '__main__':
     i = 0
     total = []
     mas = []
-    with open("file1.csv") as file:
+
+    with open("filefile.csv") as file:
         for f in file:
             i += 1
             #print(f)
@@ -20,8 +21,9 @@ if __name__ == '__main__':
                 total.append(mas)
                 mas = []
     for obj in total:
-        cursor.execute(
-            """INSERT INTO questions (text, ans1, ans2, ans3, ans4, category) VALUES ('{}', '{}', '{}', '{}', '{}', {});""".format(
-                obj[0], obj[1], obj[2], obj[3], obj[4], 1))
+       cursor.execute(
+           """INSERT INTO questions (text, ans1, ans2, ans3, ans4, category) VALUES ('{}', '{}', '{}', '{}', '{}', {});""".format(
+               obj[0], obj[1], obj[2], obj[3], obj[4], 1))
+    print("added succesfull")
     db.commit()
     db.close()

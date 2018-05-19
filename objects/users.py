@@ -1,4 +1,5 @@
 from utils import util
+from database import db
 
 
 class User:
@@ -64,5 +65,10 @@ class User:
         pass
 
 
-    def updatePlayer(self):
-        pass
+    def updatePlayer(self, gamesPlayed = 0, gamesWon = 0, questionsAnswered = 0, questionsRight = 0):
+        self.gamesPlayed += gamesPlayed
+        self.gamesWon += gamesWon
+        self.questionsAnswered += questionsAnswered
+        self.questionsRight += questionsRight
+        db.updateUser(self.name, self.avaId, self.gamesPlayed, self.gamesWon,
+                      self.questionsAnswered, self.questionsRight)

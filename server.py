@@ -1,16 +1,16 @@
 import socket
 import threading
-import mysql.connector
-import db
+from database import db
 import time
 
 from utils import util
 from configs import config
-from configs import commands as c
 
 from objects.users import User
-from objects.lobby import Lobby
-from lobbyManager import LobbyManager
+from objects.lobbyManager import LobbyManager
+
+from serverHandlers.GameHandlers import GameHandler
+from serverHandlers.preGameHadlers import PreGameHandler
 
 
 class Serv:
@@ -26,6 +26,12 @@ class Serv:
         self.curThread = 0
         self.lobbiesId = 0
         self.usersId = 0
+
+        self.gameHandler = GameHandler(self)
+        self.preGameHandler = PreGameHandler(self)
+
+        self.loggedUsers = {}
+
 
         print("started")
 
@@ -69,6 +75,7 @@ class Serv:
                     self.closeConnection(user)
                     return
 
+    #Checking for dead connections
     def aliveChecker(self):
         while True:
             time.sleep(5)
@@ -79,6 +86,7 @@ class Serv:
                 except:
                     self.closeConnection(user, 1)
 
+    #Handling messages from user
     def msgHandler(self, user, msg):
         if ";" in msg:
             msg = msg[:msg.find(";")]
@@ -89,89 +97,12 @@ class Serv:
             return False
 
         #Game commands
-        if cmd == "rdy":
-            user.lobby.playerReady()
-
-        if cmd == "sc":
-            user.lobby.startContest(user.gameId, int(command[1]), int(command[2]), int(command[3]))
-        if cmd == "ca":
-            if command[1] == "1":
-                user.lobby.contestAnswer(user.gameId, True)
-            else:
-                user.lobby.contestAnswer(user.gameId, False)
-
-        if cmd == "c":
-            user.lobby.sendToPlayers(msg + ";")
-            user.lobby.nextPlayer()
-        if cmd == "nt":
-            user.lobby.nextPlayer()
-
-        if cmd == "quitLobby":
-            user.lobby.kickPlayer(user.id)
-
+        self.gameHandler.handle(command, user)
         #Pregame handle
-        #
-        #
-        #
-        #
-        if cmd == "register":
-            if db.registerUser(command[1], command[2], command[3]):
-                user.sendMsg(c.openLoginScreen())
-                user.sendMsg(c.error("Регистрация успешна"))
-            else:
-                user.sendMsg(c.error("Пользователь уже зарегистрирован"))
-
-        if cmd == "login":
-            userInfo = db.getUser(command[1], command[2])
-            if userInfo:
-                user.authorised = True
-                user.loadUser(userInfo)
-                user.sendMsg(user.formPlayerInfo())
-                user.sendMsg("log:1;")
-            else:
-                user.sendMsg("log:0;")
-                user.sendMsg(c.error("Неверный логин или пароль"))
-
-        if cmd == "gl":
-            com = ""
-            for l in self.lobbyManager.lobbies:
-                if not l.gameStarted:
-                    com += "lobbie:" + l.formLobbyInfo()
-            com += "sl:;"
-            user.sendMsg(com)
-
-        if cmd == "cl":
-            lobby = self.lobbyManager.createLobby(user)
-            lobby.questionsType = int(command[1])
-            com = "lobbie:" + lobby.formLobbyInfo()
-            user.sendMsg(com)
-            user.sendMsg(user.lobby.formPlayerInfo())
-            user.sendMsg("jl:{}".format(lobby.lobbyId))
-
-        if cmd == "jl":
-            l = self.lobbyManager.findLobbyById(int(command[1]))
-            if l.maxPlayers != len(l.players):
-                l.sendToPlayers("player:{};ul:;".format(user.name))
-                l.addUser(user)
-                user.sendMsg(user.lobby.formPlayerInfo())
-                user.sendMsg("jl:" + command[1])
-            else:
-                user.sendMsg(c.error("Лобби заполнено"))
-
-        if cmd == "closel":
-            if user.lobby.host == user:
-                user.lobby.closeLobby()
-            else:
-                user.lobby.kickPlayer(user.id)
-
-        if cmd == "sl":
-            if user.lobby.host == user:
-                if len(user.lobby.players) > 1:
-                    user.lobby.startLobby()
-                else:
-                    user.sendMsg(c.error("Слишком мало игроков в лобби"))
+        self.preGameHandler.handle(command, user)
 
         return True
+
 
     def closeConnection(self, user, code=0):
         if code == 0:

@@ -20,6 +20,13 @@ def registerUser(login, pas, email):
 
     return True
 
+def updateUser(name ,avaId, gamesPlayed, gamesWon, questions, questionsAnswered):
+    exec("UPDATE users SET gamesPlayed = {}, gamesWon = {}, avaId = {}, "
+         "questionsAnswered = {}, questionsCorrect = {} WHERE username = '{}';".format(gamesPlayed,
+                                                                                     gamesWon, avaId,
+                                                                                     questions, questionsAnswered,
+                                                                                     name))
+
 def exec(command):
     db = connect()
     cursor = db.cursor()

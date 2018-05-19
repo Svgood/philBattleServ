@@ -1,3 +1,5 @@
+#still not ready)
+
 if __name__ == '__main__':
     print("PhilBattle Server console, help - for commands list")
     while True:

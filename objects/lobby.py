@@ -66,6 +66,7 @@ class Lobby:
             self.sendToPlayers("kick:{};".format(p.gameId))
             if len(self.players) == 1:
                 self.sendToPlayers("winner:;")
+                players[0].updatePlayer(gamesWon=1)
 
         if len(self.players) == 0:
             self.closeLobby()
@@ -110,6 +111,7 @@ class Lobby:
 
         num = 1
         for p in self.players:
+            p.updatePlayer(gamesPlayed=1)
             p.sendMsg(c.setPlayer(num) +
                            cmd +
                            c.setCurPlayer(1))
@@ -148,6 +150,7 @@ class Lobby:
             for p in self.contesters:
                 if p.gameId == playerdId:
                     p.contestAnswer = 1
+                    p.updatePlayer(questionsRight=1)
                     self.winContesters.append(p)
 
         self.contestersAnswered += 1
@@ -206,6 +209,7 @@ class Lobby:
         self.contestersAnswered = 0
         question = self.serv.setRandomQuestion(self.questionsType)
         for p in self.contesters:
+            p.updatePlayer(questionsAnswered=1)
             p.sendMsg(question)
             p.contestAnswer = 0
             p.sendMsg(c.contestNewQuestion())

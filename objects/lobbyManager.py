@@ -1,14 +1,6 @@
-import socket
 import threading
-import mysql.connector
-import db
 import time
 
-from utils import util
-from configs import config
-from configs import commands as c
-
-from objects.users import User
 from objects.lobby import Lobby
 
 class LobbyManager:
