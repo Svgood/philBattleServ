@@ -66,7 +66,7 @@ class Lobby:
             self.sendToPlayers("kick:{};".format(p.gameId))
             if len(self.players) == 1:
                 self.sendToPlayers("winner:;")
-                players[0].updatePlayer(gamesWon=1)
+                self.players[0].updatePlayer(gamesWon=1)
 
         if len(self.players) == 0:
             self.closeLobby()

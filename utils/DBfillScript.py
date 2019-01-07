@@ -8,8 +8,18 @@ if __name__ == '__main__':
 
     cursor = db.cursor()
     i = 0
+    category = 0
     total = []
     mas = []
+
+
+    while(True):
+        print("Type category: \n 0 - All \n 1 - Philosophy \n 2 - Ukrainian")
+        category = input()
+        if (category in ["1", "0", "2"]):
+            category = int(category)
+            break
+
 
     with open("filefile.csv") as file:
         for f in file:
@@ -20,6 +30,7 @@ if __name__ == '__main__':
                 print(mas)
                 total.append(mas)
                 mas = []
+
     for obj in total:
        cursor.execute(
            """INSERT INTO questions (text, ans1, ans2, ans3, ans4, category) VALUES ('{}', '{}', '{}', '{}', '{}', {});""".format(

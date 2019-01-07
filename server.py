@@ -32,8 +32,7 @@ class Serv:
 
         self.loggedUsers = {}
 
-
-        util.printLog("started")
+        util.printLog("started on {}".format(config.host))
 
     def listen(self):
 
@@ -50,7 +49,7 @@ class Serv:
             usr = User(self.curThread, "NoName{}".format(self.curThread), conn)
             self.users.append(usr)
 
-            util.printLog("Got connection " + str(len(self.conns)))
+            util.printLog("Got connection from " + str(addr))
 
             t = threading.Thread(target=self.listenConn, args=(usr, conn))
             self.threads.append(t)
