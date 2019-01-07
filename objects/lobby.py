@@ -5,6 +5,8 @@ from utils.vec2 import Vec2
 class Lobby:
 
     def __init__(self, lobbyId, host, serv):
+        #info
+
         self.serv = serv
         self.questionsType = 0
         self.lobbyId = lobbyId
@@ -15,8 +17,7 @@ class Lobby:
         self.host.lobby = self
         self.players = [self.host]
 
-        self.state = 1
-        self.currentPlayerTurn = 1
+        #contest
 
         self.contesters = []
         self.winContesters = []
@@ -24,8 +25,14 @@ class Lobby:
         self.contestCell = Vec2(0, 0)
         self.contestType = 0
 
+        #start
+
         self.playersReady = 0
         self.chat = ""
+
+        #game
+
+        self.questionAnsweredCount = 0
 
     def getTypeName(self):
         if self.questionsType == 0:
@@ -53,7 +60,6 @@ class Lobby:
         except:
             print("No lobbies to delete error")
 
-
     def kickPlayer(self, id):
         p = self.findPlayerById(id)
         p.lobby = None
@@ -71,7 +77,6 @@ class Lobby:
         if len(self.players) == 0:
             self.closeLobby()
 
-
     def playerReady(self):
         self.playersReady += 1
         if (self.playersReady == len(self.players)):
@@ -80,22 +85,6 @@ class Lobby:
     def startLobby(self):
         self.sendToPlayers("start:{}:;".format(len(self.players)))
         self.gameStarted = True
-
-    def nextPlayer(self, bonus = 0):
-        self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
-        if bonus == 0:
-            self.currentPlayerTurn += 1
-            if self.currentPlayerTurn == len(self.players) + 1:
-                self.startCommonQuestion()
-                self.currentPlayerTurn = 0
-            else:
-                if self.currentPlayerTurn == 1:
-                    self.sendToPlayers("nt:;")
-                self.sendToPlayers("scp:{};".format(self.currentPlayerTurn))
-        else:
-            self.currentPlayerTurn = 0
-            self.sendToPlayers("scp:{};".format(bonus))
-
 
     def sendToPlayers(self, msg):
         for p in self.players:
@@ -118,9 +107,22 @@ class Lobby:
             num += 1
         self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
 
+    def questionAnswered(self):
+        self.questionAnsweredCount += 1
+
+        if (self.questionAnsweredCount != len(self.players)): return
+
+        self.nextTurn()
+        self.questionAnsweredCount = 0
+
+
     def addUser(self, user):
         self.players.append(user)
         user.lobby = self
+
+    def nextTurn(self, bonus = 0):
+        self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
+        self.sendToPlayers("nt:;")
 
     def startContest(self, attackerId, defenderId, x, y):
         self.contestType = 0
@@ -180,11 +182,11 @@ class Lobby:
             self.sendToPlayers(c.contestWinner(winner.gameId) +
                                c.captureCell(winner.gameId, self.contestCell.x,
                                              self.contestCell.y))
-            self.nextPlayer()
+            self.nextTurn()
             return
         if lostCount == 2:
             self.sendToPlayers(c.contestWinner(0))
-            self.nextPlayer()
+            self.nextTurn()
             return
         self.resetContestVars()
 
@@ -216,9 +218,9 @@ class Lobby:
     def processCommonQuestion(self):
         self.contesters = self.winContesters
         if len(self.winContesters) == 1:
-            self.nextPlayer(self.winContesters[0].gameId)
+            self.nextTurn(self.winContesters[0].gameId)
         elif len(self.winContesters) == 0:
-            self.nextPlayer()
+            self.nextTurn()
         else:
             self.resetContestVars()
 
