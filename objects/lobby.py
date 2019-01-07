@@ -122,13 +122,6 @@ class Lobby:
         self.players.append(user)
         user.lobby = self
 
-    def startCommonQuestion(self):
-        self.contestType = 1
-        self.winContesters = []
-        self.contestersAnswered = 0
-        self.contesters = self.players.copy()
-        self.sendToPlayers(c.commonQuestion())
-
     def startContest(self, attackerId, defenderId, x, y):
         self.contestType = 0
         self.contestCell = Vec2(x, y)
@@ -195,15 +188,6 @@ class Lobby:
             return
         self.resetContestVars()
 
-    def processCommonQuestion(self):
-        self.contesters = self.winContesters
-        if len(self.winContesters) == 1:
-            self.nextPlayer(self.winContesters[0].gameId)
-        elif len(self.winContesters) == 0:
-            self.nextPlayer()
-        else:
-            self.resetContestVars()
-
     def resetContestVars(self):
         self.winContesters = []
         self.contestersAnswered = 0
@@ -219,6 +203,24 @@ class Lobby:
             if self.players[i].id == id:
                 return self.players[i]
         return None
+
+    #Obsolete
+
+    def startCommonQuestion(self):
+        self.contestType = 1
+        self.winContesters = []
+        self.contestersAnswered = 0
+        self.contesters = self.players.copy()
+        self.sendToPlayers(c.commonQuestion())
+
+    def processCommonQuestion(self):
+        self.contesters = self.winContesters
+        if len(self.winContesters) == 1:
+            self.nextPlayer(self.winContesters[0].gameId)
+        elif len(self.winContesters) == 0:
+            self.nextPlayer()
+        else:
+            self.resetContestVars()
 
 
 
