@@ -153,9 +153,10 @@ class Lobby:
             if self.contestType == 0:
                 self.processContest()
                 return
-            if self.contestType == 1:
-                self.processCommonQuestion()
-                return
+
+            # if self.contestType == 1:
+            #     self.processCommonQuestion()
+            #     return
 
     def sendToContesters(self, msg):
         for p in self.contesters:
@@ -208,21 +209,21 @@ class Lobby:
 
     #Obsolete
 
-    def startCommonQuestion(self):
-        self.contestType = 1
-        self.winContesters = []
-        self.contestersAnswered = 0
-        self.contesters = self.players.copy()
-        self.sendToPlayers(c.commonQuestion())
-
-    def processCommonQuestion(self):
-        self.contesters = self.winContesters
-        if len(self.winContesters) == 1:
-            self.nextTurn(self.winContesters[0].gameId)
-        elif len(self.winContesters) == 0:
-            self.nextTurn()
-        else:
-            self.resetContestVars()
+    # def startCommonQuestion(self):
+    #     self.contestType = 1
+    #     self.winContesters = []
+    #     self.contestersAnswered = 0
+    #     self.contesters = self.players.copy()
+    #     self.sendToPlayers(c.commonQuestion())
+    #
+    # def processCommonQuestion(self):
+    #     self.contesters = self.winContesters
+    #     if len(self.winContesters) == 1:
+    #         self.nextTurn(self.winContesters[0].gameId)
+    #     elif len(self.winContesters) == 0:
+    #         self.nextTurn()
+    #     else:
+    #         self.resetContestVars()
 
 
 

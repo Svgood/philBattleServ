@@ -65,10 +65,14 @@ class User:
         pass
 
 
-    def updatePlayer(self, gamesPlayed = 0, gamesWon = 0, questionsAnswered = 0, questionsRight = 0):
+    def updatePlayer(self, gamesPlayed = 0, gamesWon = 0, questionsAnswered = 0, questionsRight = 0, avaId = -1):
         self.gamesPlayed += gamesPlayed
         self.gamesWon += gamesWon
         self.questionsAnswered += questionsAnswered
         self.questionsRight += questionsRight
+
+        if (avaId != -1):
+            self.avaId = avaId
+
         db.updateUser(self.name, self.avaId, self.gamesPlayed, self.gamesWon,
                       self.questionsAnswered, self.questionsRight)

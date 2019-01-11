@@ -1,4 +1,5 @@
 from configs import commands as c
+from configs import netCodes
 from database import db
 from utils import util
 
@@ -71,3 +72,7 @@ class PreGameHandler:
                     user.lobby.startLobby()
                 else:
                     user.sendMsg(c.error("Слишком мало игроков в лобби"))
+
+        if cmd == str(netCodes.SetAvatar):
+            user.updatePlayer(avaId=int(command[1]))
+            util.printLog(f"Changing user [{user.name}] ava id to {command[1]}")
