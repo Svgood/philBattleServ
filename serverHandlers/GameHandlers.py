@@ -29,7 +29,7 @@ class GameHandler:
         if cmd == "c":
             user.updatePlayer(questionsRight=1)
             user.lobby.sendToPlayers(":".join(command) + ";")
-            user.lobby.nextTurn()
+            #user.lobby.nextTurn()
 
         #switch to next player
         if cmd == "nt":
@@ -42,3 +42,7 @@ class GameHandler:
         #Check net codes
         if cmd == str(netCodes.QuestionAnswered):
             user.lobby.questionAnswered()
+
+        if cmd == str(netCodes.MarkCell):
+            user.lobby.sendToPlayers(":".join(command) + ";")
+            return

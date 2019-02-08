@@ -1,4 +1,5 @@
 from utils import util
+from utils.vec2 import Vec2
 from database import db
 
 
@@ -15,6 +16,7 @@ class User:
         self.lobby = None
         self.contestAnswer = 0
         self.health = 1
+        self.attackingCell = Vec2(-1, -1)
 
         #Stat
         self.avaId = 0

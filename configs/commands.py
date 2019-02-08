@@ -10,8 +10,8 @@ def joinLobby(playerId, lobbyId):
     return "jl:{}:{};".format(playerId, lobbyId)
 
 
-def setCurPlayer(playerId):
-    return "scp:{};".format(playerId)
+# def setCurPlayer(playerId):
+#     return "scp:{};".format(playerId)
 
 
 def commonQuestion():

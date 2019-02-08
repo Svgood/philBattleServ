@@ -86,20 +86,20 @@ class Serv:
                     self.closeConnection(user, 1)
 
     #Handling messages from user
-    def msgHandler(self, user, msg):
-        if ";" in msg:
-            msg = msg[:msg.find(";")]
-        command = msg.split(":")
-        cmd = command[0]
+    def msgHandler(self, user, msgs):
+        for msg in msgs.split(";"):
+            if ";" in msg:
+                msg = msg[:msg.find(";")]
+            command = msg.split(":")
+            cmd = command[0]
 
-        if cmd == "closeConnection":
-            return False
+            if cmd == "closeConnection":
+                return False
 
-        #Game commands
-        self.gameHandler.handle(command, user)
-        #Pregame handle
-        self.preGameHandler.handle(command, user)
-
+            #Game commands
+            self.gameHandler.handle(command, user)
+            #Pregame handle
+            self.preGameHandler.handle(command, user)
         return True
 
 

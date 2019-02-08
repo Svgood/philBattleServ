@@ -24,6 +24,8 @@ class Lobby:
         self.contestersAnswered = 0
         self.contestCell = Vec2(0, 0)
         self.contestType = 0
+        self.contestTime = False
+        self.freeCellsLeft = 16
 
         #start
 
@@ -102,8 +104,7 @@ class Lobby:
         for p in self.players:
             p.updatePlayer(gamesPlayed=1)
             p.sendMsg(c.setPlayer(num) +
-                           cmd +
-                           c.setCurPlayer(1))
+                           cmd)
             num += 1
         self.sendToPlayers(self.serv.setRandomQuestion(self.questionsType))
 
